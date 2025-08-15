@@ -3,20 +3,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { type AssessmentResult } from '@/types/assessment';
-import { Download, Mail, RotateCcw } from 'lucide-react';
+import { Download, RotateCcw } from 'lucide-react';
 
 interface AssessmentResultsProps {
   result: AssessmentResult;
   onRestart: () => void;
   onDownloadPDF: () => void;
-  onEmailResults: () => void;
 }
 
 export function AssessmentResults({ 
   result, 
   onRestart, 
-  onDownloadPDF, 
-  onEmailResults 
+  onDownloadPDF
 }: AssessmentResultsProps) {
   const getImpactColor = (level: string) => {
     switch (level) {
@@ -133,10 +131,6 @@ export function AssessmentResults({
         <Button onClick={onDownloadPDF} className="flex items-center gap-2">
           <Download className="h-4 w-4" />
           Download PDF Report
-        </Button>
-        <Button onClick={onEmailResults} variant="outline" className="flex items-center gap-2">
-          <Mail className="h-4 w-4" />
-          Email Results
         </Button>
         <Button onClick={onRestart} variant="outline" className="flex items-center gap-2">
           <RotateCcw className="h-4 w-4" />

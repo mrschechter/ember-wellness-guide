@@ -10,7 +10,7 @@ import {
   loadAssessmentResult 
 } from '@/utils/assessmentCalculator';
 import { type AssessmentResponse, type AssessmentResult } from '@/types/assessment';
-import { Flame, FileText, TrendingUp, Mail } from 'lucide-react';
+import { Flame, FileText, TrendingUp } from 'lucide-react';
 
 const Index = () => {
   const [currentResult, setCurrentResult] = useState<AssessmentResult | null>(null);
@@ -42,21 +42,6 @@ const Index = () => {
     alert('PDF download feature coming soon! For now, you can print this page.');
   };
 
-  const handleEmailResults = () => {
-    if (!currentResult) return;
-    
-    const subject = 'My Ember Method Assessment Results';
-    const body = `I completed The Ember Method Assessment on ${currentResult.completedAt.toLocaleDateString()}.
-
-My primary profile is: ${currentResult.primaryProfile}
-
-This assessment helps identify my wellness priorities and provides personalized protocol recommendations.
-
-Visit the assessment tool to learn more about The Ember Method.`;
-    
-    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoLink);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -98,7 +83,6 @@ Visit the assessment tool to learn more about The Ember Method.`;
                 result={currentResult}
                 onRestart={handleRestart}
                 onDownloadPDF={handleDownloadPDF}
-                onEmailResults={handleEmailResults}
               />
             </TabsContent>
 
