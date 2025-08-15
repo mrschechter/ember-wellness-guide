@@ -37,9 +37,16 @@ const Index = () => {
     setActiveTab('assessment');
   };
 
-  const handleDownloadPDF = () => {
-    // TODO: Implement PDF generation
-    alert('PDF download feature coming soon! For now, you can print this page.');
+  const handleDownloadPDF = async () => {
+    if (!currentResult) return;
+    
+    try {
+      const { generateAssessmentPDF } = await import('@/utils/pdfGenerator');
+      await generateAssessmentPDF(currentResult);
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
   };
 
 
