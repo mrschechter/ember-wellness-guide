@@ -38,11 +38,22 @@ const Index = () => {
   };
 
   const handleDownloadPDF = async () => {
-    if (!currentResult) return;
+    console.log('PDF download button clicked');
+    if (!currentResult) {
+      console.log('No current result available');
+      return;
+    }
+    
+    console.log('Current result:', currentResult);
     
     try {
+      console.log('Importing PDF generator...');
       const { generateAssessmentPDF } = await import('@/utils/pdfGenerator');
+      console.log('PDF generator imported successfully');
+      
+      console.log('Generating PDF...');
       await generateAssessmentPDF(currentResult);
+      console.log('PDF generated successfully');
     } catch (error) {
       console.error('Error downloading PDF:', error);
       alert('Failed to generate PDF. Please try again.');
