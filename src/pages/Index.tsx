@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { AssessmentForm } from '@/components/AssessmentForm';
 import { AssessmentResults } from '@/components/AssessmentResults';
 import { ProtocolRecommendations } from '@/components/ProtocolRecommendations';
@@ -10,7 +13,7 @@ import {
   loadAssessmentResult 
 } from '@/utils/assessmentCalculator';
 import { type AssessmentResponse, type AssessmentResult } from '@/types/assessment';
-import { Flame, FileText, TrendingUp } from 'lucide-react';
+import { Flame, FileText, TrendingUp, BarChart3, Calendar, Target } from 'lucide-react';
 
 const Index = () => {
   const [currentResult, setCurrentResult] = useState<AssessmentResult | null>(null);
@@ -66,12 +69,23 @@ const Index = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Flame className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">The Ember Method</h1>
-              <p className="text-sm text-muted-foreground">Women's Health Assessment Tool</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Flame className="h-8 w-8 text-primary" />
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">The Ember Method</h1>
+                <p className="text-sm text-muted-foreground">Women's Health Assessment Tool</p>
+              </div>
             </div>
+            
+            {currentResult && (
+              <Link to="/dashboard">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Progress Dashboard
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -109,7 +123,46 @@ const Index = () => {
             </TabsContent>
 
             <TabsContent value="progress" className="space-y-8">
-              <ProgressTracker />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {/* Legacy Progress Tracker */}
+                <ProgressTracker />
+                
+                {/* New Dashboard Preview */}
+                <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
+                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Enhanced Progress Tracking
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    Get detailed insights with our comprehensive dashboard featuring daily check-ins, supplement tracking, and visual progress analytics.
+                  </p>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      <span>Daily check-ins with energy & mood tracking</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Target className="h-4 w-4 text-primary" />
+                      <span>Supplement compliance monitoring</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <BarChart3 className="h-4 w-4 text-primary" />
+                      <span>Visual progress charts & trends</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <span>Weekly assessments & milestone tracking</span>
+                    </div>
+                  </div>
+                  
+                  <Link to="/dashboard">
+                    <Button className="w-full">
+                      Access Progress Dashboard
+                    </Button>
+                  </Link>
+                </Card>
+              </div>
             </TabsContent>
           </Tabs>
         )}
