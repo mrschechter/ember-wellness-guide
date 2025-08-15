@@ -1,5 +1,4 @@
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { type AssessmentResult } from '@/types/assessment';
 
 const PROTOCOL_DATA = {
@@ -156,21 +155,24 @@ const PROTOCOL_DATA = {
 };
 
 export async function generateAssessmentPDF(result: AssessmentResult): Promise<void> {
-  const protocol = PROTOCOL_DATA[result.primaryProfile as keyof typeof PROTOCOL_DATA];
-  const topPriorities = result.sectionScores
-    .filter(s => s.impactLevel === 'major')
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+  console.log('Starting PDF generation...');
+  
+  try {
+    const protocol = PROTOCOL_DATA[result.primaryProfile as keyof typeof PROTOCOL_DATA];
+    const topPriorities = result.sectionScores
+      .filter(s => s.impactLevel === 'major')
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+    console.log('Protocol data:', protocol);
+    console.log('Top priorities:', topPriorities);
 
-  // Create PDF
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const pageWidth = 210;
-  const pageHeight = 297;
-  const margin = 20;
-  const lineHeight = 6;
-  let yPosition = margin;
-
-  // Helper function to add text with word wrapping
+    // Create PDF
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 20;
+    const lineHeight = 6;
+    let yPosition = margin;
   const addWrappedText = (text: string, x: number, y: number, maxWidth: number, fontSize: number = 10) => {
     pdf.setFontSize(fontSize);
     const lines = pdf.splitTextToSize(text, maxWidth);
@@ -193,8 +195,8 @@ export async function generateAssessmentPDF(result: AssessmentResult): Promise<v
   yPosition += 15;
 
   pdf.setFontSize(12);
-  pdf.setTextColor(100, 100, 100);
-  pdf.text(`Completed on ${result.completedAt.toLocaleDateString()}`, pageWidth / 2, yPosition, { align: 'center' });
+  const completedDate = result.completedAt instanceof Date ? result.completedAt : new Date((result.completedAt as any).value?.iso || result.completedAt);
+  pdf.text(`Completed on ${completedDate.toLocaleDateString()}`, pageWidth / 2, yPosition, { align: 'center' });
   yPosition += 20;
 
   // Primary Profile Section
@@ -360,7 +362,14 @@ export async function generateAssessmentPDF(result: AssessmentResult): Promise<v
   yPosition += 6;
   pdf.text('This assessment is for educational purposes only and does not replace professional medical advice.', pageWidth / 2, yPosition, { align: 'center' });
 
-  // Download PDF
-  const filename = `ember-method-assessment-${result.completedAt.toISOString().split('T')[0]}.pdf`;
-  pdf.save(filename);
+    // Download PDF
+    const filename = `ember-method-assessment-${completedDate.toISOString().split('T')[0]}.pdf`;
+    console.log('Saving PDF as:', filename);
+    pdf.save(filename);
+    console.log('PDF saved successfully');
+    
+  } catch (error) {
+    console.error('Error in PDF generation:', error);
+    throw error;
+  }
 }
