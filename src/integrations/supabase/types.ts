@@ -68,6 +68,66 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_checkins: {
+        Row: {
+          created_at: string
+          date: string
+          energy_afternoon: number | null
+          energy_evening: number | null
+          energy_morning: number | null
+          exercise_completed: boolean | null
+          id: string
+          mood_rating: number | null
+          protein_meals: number | null
+          screen_free_evening: boolean | null
+          sleep_quality: number | null
+          stress_level: number | null
+          stress_management: boolean | null
+          sunlight_exposure: boolean | null
+          updated_at: string
+          user_id: string
+          water_intake: number | null
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          energy_afternoon?: number | null
+          energy_evening?: number | null
+          energy_morning?: number | null
+          exercise_completed?: boolean | null
+          id?: string
+          mood_rating?: number | null
+          protein_meals?: number | null
+          screen_free_evening?: boolean | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          stress_management?: boolean | null
+          sunlight_exposure?: boolean | null
+          updated_at?: string
+          user_id: string
+          water_intake?: number | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          energy_afternoon?: number | null
+          energy_evening?: number | null
+          energy_morning?: number | null
+          exercise_completed?: boolean | null
+          id?: string
+          mood_rating?: number | null
+          protein_meals?: number | null
+          screen_free_evening?: boolean | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          stress_management?: boolean | null
+          sunlight_exposure?: boolean | null
+          updated_at?: string
+          user_id?: string
+          water_intake?: number | null
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
           course_id: string
@@ -218,6 +278,66 @@ export type Database = {
         }
         Relationships: []
       }
+      progress_milestones: {
+        Row: {
+          achieved_date: string
+          created_at: string
+          id: string
+          milestone_type: string
+          milestone_value: number | null
+          user_id: string
+        }
+        Insert: {
+          achieved_date: string
+          created_at?: string
+          id?: string
+          milestone_type: string
+          milestone_value?: number | null
+          user_id: string
+        }
+        Update: {
+          achieved_date?: string
+          created_at?: string
+          id?: string
+          milestone_type?: string
+          milestone_value?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      supplement_compliance: {
+        Row: {
+          created_at: string
+          date: string
+          evening_taken: boolean | null
+          id: string
+          morning_taken: boolean | null
+          supplement_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          evening_taken?: boolean | null
+          id?: string
+          morning_taken?: boolean | null
+          supplement_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          evening_taken?: boolean | null
+          id?: string
+          morning_taken?: boolean | null
+          supplement_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           completed_at: string
@@ -246,6 +366,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      weekly_assessments: {
+        Row: {
+          created_at: string
+          goals_next_week: string | null
+          id: string
+          profile_score_1: number | null
+          profile_score_2: number | null
+          profile_score_3: number | null
+          profile_score_4: number | null
+          profile_score_5: number | null
+          profile_score_6: number | null
+          profile_score_7: number | null
+          updated_at: string
+          user_id: string
+          week_start_date: string
+          weekly_challenges: string | null
+          weekly_wins: string | null
+        }
+        Insert: {
+          created_at?: string
+          goals_next_week?: string | null
+          id?: string
+          profile_score_1?: number | null
+          profile_score_2?: number | null
+          profile_score_3?: number | null
+          profile_score_4?: number | null
+          profile_score_5?: number | null
+          profile_score_6?: number | null
+          profile_score_7?: number | null
+          updated_at?: string
+          user_id: string
+          week_start_date: string
+          weekly_challenges?: string | null
+          weekly_wins?: string | null
+        }
+        Update: {
+          created_at?: string
+          goals_next_week?: string | null
+          id?: string
+          profile_score_1?: number | null
+          profile_score_2?: number | null
+          profile_score_3?: number | null
+          profile_score_4?: number | null
+          profile_score_5?: number | null
+          profile_score_6?: number | null
+          profile_score_7?: number | null
+          updated_at?: string
+          user_id?: string
+          week_start_date?: string
+          weekly_challenges?: string | null
+          weekly_wins?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
