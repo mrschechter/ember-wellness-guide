@@ -79,6 +79,15 @@ export function AssessmentSignInGate({ onSignInComplete }: AssessmentSignInGateP
     }
   };
 
+  const handleTestBypass = () => {
+    // For testing purposes - bypass authentication
+    toast({
+      title: "Test Mode Active",
+      description: "Bypassing authentication for testing purposes."
+    });
+    onSignInComplete();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-pink-50 flex items-center justify-center p-4">
       <Card className="max-w-md w-full">
@@ -104,6 +113,20 @@ export function AssessmentSignInGate({ onSignInComplete }: AssessmentSignInGateP
               <li>✓ Custom restoration timeline</li>
               <li>✓ Access to progress tracking dashboard</li>
             </ul>
+          </div>
+
+          {/* Testing bypass button */}
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800 mb-3">
+              <strong>Testing Mode:</strong> Skip authentication to preview the results flow.
+            </p>
+            <Button 
+              onClick={handleTestBypass}
+              variant="outline" 
+              className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+            >
+              Skip Login (Testing Only)
+            </Button>
           </div>
 
           {/* Sign-in form */}
