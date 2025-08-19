@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,61 +7,136 @@ import { AssessmentForm } from '@/components/AssessmentForm';
 import { AssessmentResults } from '@/components/AssessmentResults';
 import { ProtocolRecommendations } from '@/components/ProtocolRecommendations';
 import { ProgressTracker } from '@/components/ProgressTracker';
+import { AssessmentSignInGate } from '@/components/auth/AssessmentSignInGate';
+import { useAuth } from '@/hooks/useAuth';
 import { 
-  calculateAssessmentResult, 
-  saveAssessmentResult, 
-  loadAssessmentResult 
-} from '@/utils/assessmentCalculator';
+  storePendingAssessment,
+  getPendingAssessment,
+  clearPendingAssessment,
+  saveAssessmentToDatabase,
+  getUserAssessmentResult,
+  markResultsViewed
+} from '@/utils/assessmentStorage';
+import { calculateAssessmentResult } from '@/utils/assessmentCalculator';
 import { type AssessmentResponse, type AssessmentResult } from '@/types/assessment';
 import { Flame, FileText, TrendingUp, BarChart3, Calendar, Target } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-const Index = () => {
+const Assessment = () => {
   const [currentResult, setCurrentResult] = useState<AssessmentResult | null>(null);
   const [activeTab, setActiveTab] = useState('assessment');
+  const [showSignInGate, setShowSignInGate] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { user, session } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const stored = loadAssessmentResult();
-    if (stored) {
-      setCurrentResult(stored);
-      setActiveTab('results');
-    }
-  }, []);
+    const initializeAssessment = async () => {
+      if (user) {
+        // User is logged in, check for existing results
+        const result = await getUserAssessmentResult(user.id);
+        if (result) {
+          setCurrentResult(result);
+          setActiveTab('results');
+          await markResultsViewed(user.id);
+        }
+        
+        // Check for pending assessment and save it
+        const pending = getPendingAssessment();
+        if (pending) {
+          await saveAssessmentToDatabase(user.id, pending);
+          clearPendingAssessment();
+          setCurrentResult(pending.result);
+          setActiveTab('results');
+          toast({
+            title: "Welcome back!",
+            description: "Your assessment results have been saved to your account."
+          });
+        }
+      }
+      setLoading(false);
+    };
 
-  const handleAssessmentComplete = (responses: AssessmentResponse) => {
-    const result = calculateAssessmentResult(responses);
-    setCurrentResult(result);
-    saveAssessmentResult(result);
-    setActiveTab('results');
+    initializeAssessment();
+  }, [user, toast]);
+
+  const handleAssessmentComplete = async (responses: AssessmentResponse) => {
+    if (user) {
+      // User is logged in, save directly to database
+      const result = calculateAssessmentResult(responses);
+      const pendingData = {
+        answers: responses,
+        timestamp: new Date().toISOString(),
+        result
+      };
+      
+      await saveAssessmentToDatabase(user.id, pendingData);
+      setCurrentResult(result);
+      setActiveTab('results');
+      toast({
+        title: "Assessment Complete!",
+        description: "Your personalized results are ready."
+      });
+    } else {
+      // User not logged in, store temporarily and show sign-in gate
+      storePendingAssessment(responses);
+      setShowSignInGate(true);
+    }
+  };
+
+  const handleSignInComplete = async () => {
+    setShowSignInGate(false);
+    // Results will be loaded in useEffect when user state changes
   };
 
   const handleRestart = () => {
     setCurrentResult(null);
-    localStorage.removeItem('emberAssessmentResult');
+    clearPendingAssessment();
     setActiveTab('assessment');
   };
 
   const handleDownloadPDF = async () => {
-    console.log('PDF download button clicked');
     if (!currentResult) {
-      console.log('No current result available');
+      toast({
+        variant: "destructive",
+        title: "No results available",
+        description: "Please complete the assessment first."
+      });
       return;
     }
     
-    console.log('Current result:', currentResult);
-    
     try {
-      console.log('Importing PDF generator...');
       const { generateAssessmentPDF } = await import('@/utils/pdfGenerator');
-      console.log('PDF generator imported successfully');
-      
-      console.log('Generating PDF...');
       await generateAssessmentPDF(currentResult);
-      console.log('PDF generated successfully');
+      toast({
+        title: "PDF Generated",
+        description: "Your assessment report has been downloaded."
+      });
     } catch (error) {
       console.error('Error downloading PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      toast({
+        variant: "destructive",
+        title: "Download Failed",
+        description: "Failed to generate PDF. Please try again."
+      });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your assessment...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (showSignInGate) {
+    return <AssessmentSignInGate onSignInComplete={handleSignInComplete} />;
+  }
 
 
   return (
@@ -111,11 +186,48 @@ const Index = () => {
             </TabsList>
 
             <TabsContent value="results" className="space-y-8">
-              <AssessmentResults
-                result={currentResult}
-                onRestart={handleRestart}
-                onDownloadPDF={handleDownloadPDF}
-              />
+              <div className="space-y-8">
+                {user && (
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">
+                      Welcome back, {user.user_metadata?.firstName || 'there'}!
+                    </h2>
+                    <p className="text-muted-foreground">
+                      Here are your personalized Ember Method results
+                    </p>
+                  </div>
+                )}
+                
+                <AssessmentResults
+                  result={currentResult}
+                  onRestart={handleRestart}
+                  onDownloadPDF={handleDownloadPDF}
+                />
+                
+                {/* Course offer section */}
+                <div className="mt-12">
+                  <Card className="bg-gradient-to-r from-orange-50 to-pink-50 border-primary/20">
+                    <div className="p-8 text-center">
+                      <h3 className="text-2xl font-bold text-foreground mb-4">
+                        Ready to Start Your Restoration?
+                      </h3>
+                      <p className="text-lg text-muted-foreground mb-6">
+                        Get the complete step-by-step program to implement your personalized protocol
+                      </p>
+                      <Button 
+                        size="lg"
+                        className="text-lg px-8 py-4"
+                        onClick={() => toast({
+                          title: "Coming Soon!",
+                          description: "Our complete restoration program will be available soon."
+                        })}
+                      >
+                        Get Your Complete Restoration Program
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="protocol" className="space-y-8">
@@ -181,4 +293,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Assessment;

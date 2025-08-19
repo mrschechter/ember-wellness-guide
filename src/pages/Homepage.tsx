@@ -1,10 +1,33 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useAuth } from '@/hooks/useAuth';
+import { AssessmentSignInGate } from '@/components/auth/AssessmentSignInGate';
 import { Flame, ArrowRight, CheckCircle, Users, TrendingUp, Sparkles } from 'lucide-react';
 
 const Homepage = () => {
+  const { user, loading } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleTakeAssessment = () => {
+    navigate('/assessment');
+  };
+
+  const handleLogin = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleLoginComplete = () => {
+    setShowLoginModal(false);
+    navigate('/dashboard');
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -42,19 +65,25 @@ const Homepage = () => {
             supplement protocol to restore energy, balance hormones, and reignite your vitality.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link to="/assessment">
-              <Button size="lg" className="text-lg px-8 py-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-4"
+                onClick={handleTakeAssessment}
+              >
                 Take Free Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
-                Login to Dashboard
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="text-lg px-8 py-4"
+                onClick={handleLogin}
+                disabled={loading}
+              >
+                {user ? 'Go to Dashboard' : 'Login to Dashboard'}
               </Button>
-            </Link>
-          </div>
+            </div>
           
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
             <Users className="h-4 w-4" />
@@ -93,11 +122,12 @@ const Homepage = () => {
           </div>
           
           <div className="text-center">
-            <Link to="/assessment">
-              <Button size="lg">
-                Discover What's Really Wrong
-              </Button>
-            </Link>
+            <Button 
+              size="lg"
+              onClick={handleTakeAssessment}
+            >
+              Discover What's Really Wrong
+            </Button>
           </div>
         </div>
       </section>
@@ -217,17 +247,23 @@ const Homepage = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <Link to="/assessment">
-              <Button size="lg" className="text-lg px-8 py-4">
-                <Sparkles className="mr-2 h-5 w-5" />
-                Start Your Assessment Now
-              </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
-                Login to Continue
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="text-lg px-8 py-4"
+              onClick={handleTakeAssessment}
+            >
+              <Sparkles className="mr-2 h-5 w-5" />
+              Start Your Assessment Now
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="text-lg px-8 py-4"
+              onClick={handleLogin}
+              disabled={loading}
+            >
+              {user ? 'Go to Dashboard' : 'Login to Continue'}
+            </Button>
           </div>
           
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
@@ -246,6 +282,13 @@ const Homepage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Login Modal */}
+      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+        <DialogContent className="p-0 max-w-md">
+          <AssessmentSignInGate onSignInComplete={handleLoginComplete} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
