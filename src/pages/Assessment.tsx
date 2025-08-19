@@ -147,46 +147,7 @@ const Assessment = () => {
             </TabsContent>
 
             <TabsContent value="progress" className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                {/* Legacy Progress Tracker */}
-                <ProgressTracker />
-                
-                {/* New Dashboard Preview */}
-                <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Enhanced Progress Tracking
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Get detailed insights with our comprehensive dashboard featuring daily check-ins, supplement tracking, and visual progress analytics.
-                  </p>
-                  
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      <span>Daily check-ins with energy & mood tracking</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Target className="h-4 w-4 text-primary" />
-                      <span>Supplement compliance monitoring</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <BarChart3 className="h-4 w-4 text-primary" />
-                      <span>Visual progress charts & trends</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <TrendingUp className="h-4 w-4 text-primary" />
-                      <span>Weekly assessments & milestone tracking</span>
-                    </div>
-                  </div>
-                  
-                  <Link to="/dashboard">
-                    <Button className="w-full">
-                      Access Progress Dashboard
-                    </Button>
-                  </Link>
-                </Card>
-              </div>
+              <ProgressTracker />
             </TabsContent>
           </Tabs>
         )}
