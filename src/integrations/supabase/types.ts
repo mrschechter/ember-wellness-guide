@@ -14,6 +14,109 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_copies: {
+        Row: {
+          created_at: string
+          cta: string
+          description: string
+          headline: string
+          id: string
+          project_id: string
+          variation_index: number
+        }
+        Insert: {
+          created_at?: string
+          cta: string
+          description: string
+          headline: string
+          id?: string
+          project_id: string
+          variation_index: number
+        }
+        Update: {
+          created_at?: string
+          cta?: string
+          description?: string
+          headline?: string
+          id?: string
+          project_id?: string
+          variation_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_copies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ad_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_projects: {
+        Row: {
+          analyzed_at: string
+          created_at: string
+          id: string
+          project_name: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          analyzed_at?: string
+          created_at?: string
+          id?: string
+          project_name?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          analyzed_at?: string
+          created_at?: string
+          id?: string
+          project_name?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      ad_templates: {
+        Row: {
+          created_at: string
+          format: string
+          id: string
+          project_id: string
+          size: string
+          style: string
+          template_index: number
+        }
+        Insert: {
+          created_at?: string
+          format: string
+          id?: string
+          project_id: string
+          size: string
+          style: string
+          template_index: number
+        }
+        Update: {
+          created_at?: string
+          format?: string
+          id?: string
+          project_id?: string
+          size?: string
+          style?: string
+          template_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ad_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assessment_results: {
         Row: {
           answers: Json
@@ -278,6 +381,42 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          id: string
+          product_type: string
+          status: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          product_type: string
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          id?: string
+          product_type?: string
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string | null
@@ -465,6 +604,10 @@ export type Database = {
       generate_ad_image: {
         Args: { format?: string; prompt: string }
         Returns: Json
+      }
+      user_can_access_lesson: {
+        Args: { lesson_id: string; user_id: string }
+        Returns: boolean
       }
     }
     Enums: {
