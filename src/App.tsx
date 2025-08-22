@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import DailyCheckin from "./pages/DailyCheckin";
 import WeeklyReview from "./pages/WeeklyReview";
 import ProgressCharts from "./pages/ProgressCharts";
+import Journal from "./pages/Journal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/dashboard/daily-checkin" element={<DailyCheckin />} />
             <Route path="/dashboard/weekly-review" element={<WeeklyReview />} />
             <Route path="/dashboard/progress-charts" element={<ProgressCharts />} />
+            <Route path="/journal" element={<Journal />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
